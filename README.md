@@ -5,31 +5,40 @@ Contents of ```docker-zookeeper``` Dockerfile:
 ```dockerfile
 FROM enow/main
 
-MAINTAINER writtic <writtic@gmail.com>
+MAINTAINER Writtic <writtic@gmail.com>
 
-ENV ZOOKEEPER_VERSION 3.4.8
+# Kakfa 0.9.0.1 is compatible with Zookeeper 3.3.6
+ENV ZOOKEEPER_VERSION 3.3.6
 
-LABEL name="zookeeper" version=$ZOOKEEPER_VERSION
+#Download Zookeeper
+RUN wget -q http://mirror.apache-kr.org/apache/zookeeper/zookeeper-${ZOOKEEPER_VERSION}/zookeeper-${ZOOKEEPER_VERSION}.tar.gz && \
+    wget -q https://www.apache.org/dist/zookeeper/KEYS && \
+    wget -q https://www.apache.org/dist/zookeeper/zookeeper-${ZOOKEEPER_VERSION}/zookeeper-${ZOOKEEPER_VERSION}.tar.gz.asc && \
+    wget -q https://www.apache.org/dist/zookeeper/zookeeper-${ZOOKEEPER_VERSION}/zookeeper-${ZOOKEEPER_VERSION}.tar.gz.md5
 
-# Download and Install Zookeeper
-RUN wget -q -N http://mirror.apache-kr.org/zookeeper/zookeeper-$ZOOKEEPER_VERSION/zookeeper-$ZOOKEEPER_VERSION.tar.gz \
-    && tar --strip-components=1 -C /usr/share/zookeeper -xvf ${ZOOKEEPER_VERSION}.tar.gz \
-    && rm $ZOOKEEPER_VERSION.tar.gz \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+#Verify download
+RUN md5sum -c zookeeper-${ZOOKEEPER_VERSION}.tar.gz.md5 && \
+    gpg --import KEYS && \
+    gpg --verify zookeeper-${ZOOKEEPER_VERSION}.tar.gz.asc
 
-# default parameters for config file:
-ENV tickTime=2000
-ENV dataDir=/var/lib/zookeeper/
-ENV dataLogDir=/var/log/zookeeper/
-ENV clientPort=2181
-ENV initLimit=5
-ENV syncLimit=2
+#Install
+RUN tar -xzf zookeeper-${ZOOKEEPER_VERSION}.tar.gz -C /opt
 
-# add startup script
-ADD entrypoint.sh entrypoint.sh
-RUN chmod +x entrypoint.sh
+#Configure
+RUN mv /opt/zookeeper-${ZOOKEEPER_VERSION}/conf/zoo_sample.cfg /opt/zookeeper-${ZOOKEEPER_VERSION}/conf/zoo.cfg
 
-ENTRYPOINT ["/usr/share/zookeeper/entrypoint.sh"]
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
+ENV ZK_HOME /opt/zookeeper-${ZOOKEEPER_VERSION}
+RUN sed  -i "s|/tmp/zookeeper|$ZK_HOME/data|g" $ZK_HOME/conf/zoo.cfg; mkdir $ZK_HOME/data
+
+ADD start-zk.sh /usr/bin/start-zk.sh
+EXPOSE 2181 2888 3888
+
+WORKDIR /opt/zookeeper-${ZOOKEEPER_VERSION}
+VOLUME ["/opt/zookeeper-${ZOOKEEPER_VERSION}/conf", "/opt/zookeeper-${ZOOKEEPER_VERSION}/data"]
+
+CMD /usr/sbin/sshd && bash /usr/bin/start-zk.sh
+
 ```
 
 Contents of ```entrypoint.sh```:

@@ -2,10 +2,11 @@ FROM enow/main
 
 MAINTAINER Writtic <writtic@gmail.com>
 
+# Kakfa 0.9.0.1 is compatible with Zookeeper 3.3.6
 ENV ZOOKEEPER_VERSION 3.3.6
 
 #Download Zookeeper
-RUN wget -q http://mirror.vorboss.net/apache/zookeeper/zookeeper-${ZOOKEEPER_VERSION}/zookeeper-${ZOOKEEPER_VERSION}.tar.gz && \
+RUN wget -q http://mirror.apache-kr.org/apache/zookeeper/zookeeper-${ZOOKEEPER_VERSION}/zookeeper-${ZOOKEEPER_VERSION}.tar.gz && \
     wget -q https://www.apache.org/dist/zookeeper/KEYS && \
     wget -q https://www.apache.org/dist/zookeeper/zookeeper-${ZOOKEEPER_VERSION}/zookeeper-${ZOOKEEPER_VERSION}.tar.gz.asc && \
     wget -q https://www.apache.org/dist/zookeeper/zookeeper-${ZOOKEEPER_VERSION}/zookeeper-${ZOOKEEPER_VERSION}.tar.gz.md5
