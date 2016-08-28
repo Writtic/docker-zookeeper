@@ -20,6 +20,7 @@ ZOOKEEPER_CONFIG="$ZOOKEEPER_CONFIG"$'\n'"dataLogDir=$dataLogDir"
 ZOOKEEPER_CONFIG="$ZOOKEEPER_CONFIG"$'\n'"clientPort=$clientPort"
 ZOOKEEPER_CONFIG="$ZOOKEEPER_CONFIG"$'\n'"initLimit=$initLimit"
 ZOOKEEPER_CONFIG="$ZOOKEEPER_CONFIG"$'\n'"syncLimit=$syncLimit"
+ZOOKEEPER_CONFIG="$ZOOKEEPER_CONFIG"$'\n'"maxClientCnxns=$maxClientCnxns"
 
 # Put all ZooKeeper server IPs into an array
 IFS=', ' read -r -a ZOOKEEPER_SERVERS_ARRAY <<< "$ZOOKEEPER_SERVERS"
@@ -30,7 +31,7 @@ for index in "${!ZOOKEEPER_SERVERS_ARRAY[@]}"
 do
     ZKID=$(($index+1))
     ZKIP=${ZOOKEEPER_SERVERS_ARRAY[index]}
-    if [ $ZKID == $ZOOKEEPER_ID ]
+    if [ "$ZKID" == "$ZOOKEEPER_ID" ];
     then
         # If IP's are used instead of hostnames, every ZooKeeper host has to specify itself as follows
         ZKIP=0.0.0.0

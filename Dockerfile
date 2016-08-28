@@ -5,31 +5,23 @@ MAINTAINER Writtic <writtic@gmail.com>
 # Kakfa 0.9.0.1 is compatible with Zookeeper 3.3.6
 ENV ZOOKEEPER_VERSION 3.3.6
 
-#Download Zookeeper
-RUN wget -q http://mirror.apache-kr.org/apache/zookeeper/zookeeper-${ZOOKEEPER_VERSION}/zookeeper-${ZOOKEEPER_VERSION}.tar.gz && \
-    wget -q https://www.apache.org/dist/zookeeper/KEYS && \
-    wget -q https://www.apache.org/dist/zookeeper/zookeeper-${ZOOKEEPER_VERSION}/zookeeper-${ZOOKEEPER_VERSION}.tar.gz.asc && \
-    wget -q https://www.apache.org/dist/zookeeper/zookeeper-${ZOOKEEPER_VERSION}/zookeeper-${ZOOKEEPER_VERSION}.tar.gz.md5
+ENV ZK_HOME /usr/share/zookeeper
+# LABEL name="zookeeper" version=$ZOOKEEPER_VERSION
 
-#Verify download
-RUN md5sum -c zookeeper-${ZOOKEEPER_VERSION}.tar.gz.md5 && \
-    gpg --import KEYS && \
-    gpg --verify zookeeper-${ZOOKEEPER_VERSION}.tar.gz.asc
-
-#Install
-RUN tar -xzf zookeeper-${ZOOKEEPER_VERSION}.tar.gz -C /opt
+# Download and Install Zookeeper
+RUN wget -q -N http://mirror.apache-kr.org/zookeeper/zookeeper-$ZOOKEEPER_VERSION/zookeeper-$ZOOKEEPER_VERSION.tar.gz && \
+    tar -xzvf zookeeper-$ZOOKEEPER_VERSION.tar.gz -C /usr/share && mv /usr/share/zookeeper-$ZOOKEEPER_VERSION $ZK_HOME && \
+    rm -rf zookeeper-$ZOOKEEPER_VERSION.tar.gz && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 #Configure
-RUN mv /opt/zookeeper-${ZOOKEEPER_VERSION}/conf/zoo_sample.cfg /opt/zookeeper-${ZOOKEEPER_VERSION}/conf/zoo.cfg
-
-ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
-ENV ZK_HOME /opt/zookeeper-${ZOOKEEPER_VERSION}
+RUN mv $ZK_HOME/conf/zoo_sample.cfg $ZK_HOME/conf/zoo.cfg
 RUN sed  -i "s|/tmp/zookeeper|$ZK_HOME/data|g" $ZK_HOME/conf/zoo.cfg; mkdir $ZK_HOME/data
 
 ADD start-zk.sh /usr/bin/start-zk.sh
 EXPOSE 2181 2888 3888
 
-WORKDIR /opt/zookeeper-${ZOOKEEPER_VERSION}
-VOLUME ["/opt/zookeeper-${ZOOKEEPER_VERSION}/conf", "/opt/zookeeper-${ZOOKEEPER_VERSION}/data"]
+WORKDIR /usr/share/zookeeper
+VOLUME ["/usr/share/zookeeper/conf", "/usr/share/zookeeper/data"]
 
 CMD /usr/sbin/sshd && bash /usr/bin/start-zk.sh

@@ -24,10 +24,8 @@ ENV dataLogDir=/var/log/zookeeper/
 ENV clientPort=2181
 ENV initLimit=30
 ENV syncLimit=10
+ENV maxClientCnxns=30
 WORKDIR /usr/share/zookeeper
-
-# Add VOLUMEs to allow backup of config and logs
-VOLUME ["/usr/share/zookeeper/conf", "/var/log/zookeeper"]
 
 # add startup script
 ADD entrypoint.sh entrypoint.sh
