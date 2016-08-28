@@ -2,8 +2,8 @@ FROM enow/main
 
 MAINTAINER Writtic <writtic@gmail.com>
 
-# Kakfa 0.9.0.1 is compatible with Zookeeper 3.3.6
-ENV ZOOKEEPER_VERSION 3.3.6
+# Latest version of Zookeeper
+ENV ZOOKEEPER_VERSION 3.4.8
 
 ENV ZK_HOME /usr/share/zookeeper
 # LABEL name="zookeeper" version=$ZOOKEEPER_VERSION
