@@ -18,10 +18,10 @@ RUN wget -q -N http://mirror.apache-kr.org/zookeeper/zookeeper-$ZOOKEEPER_VERSIO
 RUN mv $ZK_HOME/conf/zoo_sample.cfg $ZK_HOME/conf/zoo.cfg
 RUN sed  -i "s|/tmp/zookeeper|$ZK_HOME/data|g" $ZK_HOME/conf/zoo.cfg; mkdir $ZK_HOME/data
 
-ADD start-zk.sh /usr/bin/start-zk.sh
+ADD start-zk.sh $ZK_HOME/bin/start-zk.sh
 EXPOSE 2181 2888 3888
 
 WORKDIR /usr/share/zookeeper
 VOLUME ["/usr/share/zookeeper/conf", "/usr/share/zookeeper/data"]
 
-CMD /usr/sbin/sshd && bash /usr/bin/start-zk.sh
+CMD /usr/sbin/sshd && bash $ZK_HOME/bin/start-zk.sh
