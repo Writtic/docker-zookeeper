@@ -22,9 +22,9 @@ ENV tickTime=2000
 ENV dataDir=/var/lib/zookeeper/
 ENV dataLogDir=/var/log/zookeeper/
 ENV clientPort=2181
-ENV initLimit=30
-ENV syncLimit=10
-ENV maxClientCnxns=30
+# ENV initLimit=30
+# ENV syncLimit=10
+ENV maxClientCnxns=0
 WORKDIR /usr/share/zookeeper
 
 # add startup script
