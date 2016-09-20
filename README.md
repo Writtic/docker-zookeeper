@@ -2,7 +2,7 @@
 
 Contents of docker-zookeeper's `dockerfile`:
 
-```dockerfile
+```Dockerfile
 FROM enow/main
 
 MAINTAINER Writtic <writtic@gmail.com>
